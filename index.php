@@ -1,4 +1,6 @@
 <?php require "header.php"; ?>
+<?php require_once "func.php"; ?>
+<?php auth(); ?>
 
 <script>
     document.getElementById("pageTitle").innerText = "登录";

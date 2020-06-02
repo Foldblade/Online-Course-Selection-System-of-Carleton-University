@@ -56,7 +56,7 @@
                                                     <div class="mdui-textfield mdui-textfield-floating-label">
                                                         <i class="mdui-icon material-icons">account_circle</i>
                                                         <label class="mdui-textfield-label">用户名</label>
-                                                        <input class="mdui-textfield-input" type="text" name="user" required/>
+                                                        <input class="mdui-textfield-input" type="text" name="user" pattern="^[a-zA-Z0-9]{3,10}$" required/>
                                                         <div class="mdui-textfield-error">用户名不能为空</div>
                                                     </div>
                                                 </div>
@@ -67,6 +67,13 @@
                                                         <input class="mdui-textfield-input" type="password" name="passwd" required/>
                                                         <div class="mdui-textfield-error">密码不能为空</div>
                                                     </div>
+                                                </div>
+                                                <div class="mdui-col-xs-10 mdui-col-offset-xs-1">
+                                                    <label class="mdui-checkbox">
+                                                        <input type="checkbox" name="remember"/>
+                                                        <i class="mdui-checkbox-icon"></i>
+                                                        保持登陆状态
+                                                    </label>
                                                 </div>
                                                 <div class="mdui-col-xs-12">
                                                     <!-- 隐藏的input，传递API路径 -->
@@ -82,20 +89,35 @@
                                                         url: "api.php",  
                                                         data: $('#loginForm').serialize(),  
                                                         async: false,  
-                                                        error: function(request) {  
-                                                            alert("Connection error");  
+                                                        error: function(request) {
+                                                            mdui.alert("网络连接失败", function() {}, {"confirmText": "好的"}); 
                                                         },  
                                                         success: function(data, textStatus) {
                                                             var res = JSON.parse(data);
                                                             if (res["status"] == "success") { // 登陆成功
-                                                                alert("success!");
+                                                                // 重定向到首页
+                                                                window.location.href='index.php';
                                                             } else {
-                                                                res["error"];
+                                                                mdui.alert(res["errorMsg"], function() {}, {"confirmText": "好的"});
                                                             }
                                                         }
                                                     });
                                                 });
-
+                                                window.onload = function() {
+                                                    <?php
+                                                        if(isset($_GET["error"])) {
+                                                            if ($_GET["error"] == "notLoggedIn") {
+                                                                echo "mdui.snackbar({message: '请登陆后再进行访问',position: 'bottom'});";
+                                                            }
+                                                            if ($_GET["error"] == "privilegeError") {
+                                                                echo "mdui.snackbar({message: '权限错误，请重新登陆或联系管理员',position: 'bottom'});";
+                                                            }
+                                                            if ($_GET["error"] == "loggedOut") {
+                                                                echo "mdui.snackbar({message: '您已成功登出',position: 'bottom'});";
+                                                            }
+                                                        }
+                                                    ?>
+                                                }
                                             </script>
                                         </div>
                                     </div>
