@@ -72,7 +72,7 @@ EOF;
         </div>
         <ul class="mdui-list">
             <li class="mdui-subheader-inset">个人中心</li>
-                <li class="mdui-list-item mdui-ripple">
+                <li class="mdui-list-item mdui-ripple"  id="LCoursesLibrary">
                     <i class="mdui-list-item-icon mdui-icon material-icons">collections_bookmark</i>
                     <a href="#" class="mdui-list-item-content">课程库</a>
                 </li>
@@ -92,21 +92,21 @@ EOF;
                         echo <<< EOF
                         <li class="mdui-subheader-inset">管理中心</li>
                         <li class="mdui-list-item mdui-ripple">
-                            <i class="mdui-list-item-icon mdui-icon material-icons">build_circle</i>
+                            <i class="mdui-list-item-icon mdui-icon material-icons">build</i>
                             <a href="#" class="mdui-list-item-content">课程管理</a>
                         </li>
                         <li class="mdui-list-item mdui-ripple">
-                            <i class="mdui-list-item-icon mdui-icon material-icons">flaky</i>
+                            <i class="mdui-list-item-icon mdui-icon material-icons">pending_actions</i>
                             <a href="#" class="mdui-list-item-content">选课审核</a>
+                        </li>
+                        <li class="mdui-list-item mdui-ripple">
+                            <i class="mdui-list-item-icon mdui-icon material-icons">group_add</i>
+                            <a href="#" class="mdui-list-item-content">账号管理</a>
                         </li>
 EOF;
                     }
                     
             ?>
-            
-            
-            
-            
         </ul>
     </div>
 </header>

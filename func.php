@@ -125,4 +125,86 @@
         }
         return "";
     }
+
+    /**
+     * 列出课程归属院系清单
+     * @return array 课程库中归属院系的array
+     */
+    function listCourseAttribution() {
+        global $con;
+        $sql = "SELECT DISTINCT `attribution` FROM `course`";
+        $res = mysqli_query($con, $sql);
+        $data = mysqli_fetch_all($res, MYSQLI_NUM);
+        $return = array();
+        foreach($data as $item) {
+            $return[] = $item[0];
+        }
+        return $return;
+    }
+
+    /**
+     * 列出课程授课语言清单
+     * @return array 课程库中授课语言的array
+     */
+    function listCourseLanguage() {
+        global $con;
+        $sql = "SELECT DISTINCT `language` FROM `course`";
+        $res = mysqli_query($con, $sql);
+        $data = mysqli_fetch_all($res, MYSQLI_NUM);
+        $return = array();
+        foreach($data as $item) {
+            $return[] = $item[0];
+        }
+        return $return;
+    }
+
+    /**
+     * 列出课程类型清单
+     * @return array 课程库中课程类型的array
+     */
+    function listCourseType() {
+        global $con;
+        $sql = "SELECT DISTINCT `type` FROM `course`";
+        $res = mysqli_query($con, $sql);
+        $data = mysqli_fetch_all($res, MYSQLI_NUM);
+        $return = array();
+        foreach($data as $item) {
+            $return[] = $item[0];
+        }
+        return $return;
+    }
+
+    /**
+     * 列出选修课类型清单
+     * @return array 课程库中课程类型的array
+     */
+    function listCourseCategory() {
+        global $con;
+        $sql = "SELECT DISTINCT `category` FROM `course`";
+        $res = mysqli_query($con, $sql);
+        $data = mysqli_fetch_all($res, MYSQLI_NUM);
+        $return = array();
+        foreach($data as $item) {
+            $return[] = $item[0];
+        }
+        return $return;
+    }
+
+    /**
+     * 获得课程详情
+     * @param int $courseID 课程ID
+     * @return array 课程库中课程类型的array
+     */
+    function getCourseDetail($courseID) {
+        global $con;
+        $sql = "SELECT * FROM `course` WHERE `courseID` = $courseID";
+        $res = mysqli_query($con, $sql);
+        $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+        $count = mysqli_num_rows($res);
+        if ($count == 1) {
+            return $data[0];
+        } else {
+            return $data;
+        }
+    }
 ?>

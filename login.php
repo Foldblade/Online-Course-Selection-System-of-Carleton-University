@@ -77,7 +77,7 @@
                                                 </div>
                                                 <div class="mdui-col-xs-12">
                                                     <!-- 隐藏的input，传递API路径 -->
-                                                    <input class="mdui-hidden-xs-up" name="login"/>
+                                                    <input class="mdui-hidden" name="login"/>
                                                     <button class="mdui-btn mdui-btn-raised mdui-ripple mdui-color-theme-accent mdui-m-y-3 mdui-center" type="button" id="login">登录</button>
                                                 </div>
                                             </form>

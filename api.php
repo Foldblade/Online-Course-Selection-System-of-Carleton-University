@@ -7,7 +7,7 @@
     // 引入自定义函数
     require_once("func.php");
 
-    $response = "";
+    $response = array();
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') { // POST请求
 
@@ -61,6 +61,68 @@
                 $response = array("status" => "failed", "errorMsg" => "不全面的登陆信息");
             }
         }
+
+        /** 课程查询表单 
+         *  参数: 
+         *      searchCourse: API判别名,字段必须
+         *      attribution: 开设院系，必须，可为空
+         *      language: 授课语种，必须，可为空
+         *      type: 课程类型，必须，可为空
+         *      category: 校选课类别，可选，默认为空
+         *      name: 查询的课程名，必须，可为空
+         *      page: 可选，分页用，默认为1
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+         *      totalPages: 成功时存在。该查询以20页一页进行分页所需的总页数
+        */
+        if(isset($_POST["searchCourse"])) {
+            $page = 1;
+            $category = "";
+            if(isset($_POST["attribution"]) && isset($_POST["language"]) && isset($_POST["type"])) {
+                if(isset($_POST["page"])) {
+                    $page = strval($_POST["page"]);
+                }
+                if(isset($_POST["category"])) {
+                    $category = $_POST["category"];
+                }
+                $attribution = $_POST["attribution"];
+                $language = $_POST["language"];
+                $type = $_POST["type"];
+                $name = $_POST["name"];
+                $select = "SELECT `courseID`, `name`, `score`, `totalTime`, 
+                        `attribution`, `language`, `type`, `category` FROM `course` ";
+                $where = 'WHERE `courseID` != "" '; // 这个条件毫无意义，只是为了拼凑其他条件方便一点
+                if($attribution != "") {
+                    $where = $where."AND `attribution` = '{$attribution}' ";
+                }
+                if($language != "") {
+                    $where = $where."AND `language` = '{$language}' ";
+                }
+                if($type != "") {
+                    $where = $where."AND `type` = '{$type}' ";
+                }
+                if($category != "") {
+                    $where = $where."AND `category` = '{$category}' ";
+                }
+                if($name != "") {
+                    $where = $where."AND `name` LIKE '%{$name}%' ";
+                }
+                $start = 20 * ($page-1);
+                $sql = $select.$where."LIMIT {$start}, 20";
+                $res = mysqli_query($con, $sql);
+                $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $select = "SELECT COUNT(*) AS `count` FROM `course` ";
+                $sql = $select.$where;
+                $res = mysqli_query($con, $sql);
+                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $totalPages = ceil(intval($data[0]["count"]) / 20); // 向上取整，获得总页数
+                $response = array("status" => "success", "data" => $searchData, "totalPages" => $totalPages, "thisPage" => $page);
+            } else {
+                $response = array("status" => "failed");
+            }
+        }
+
     } else if ($_SERVER['REQUEST_METHOD'] == 'GET') { // GET请求
 
         /** 退出登录

@@ -20,7 +20,7 @@
         </div>
         <div style="background:rgba(0, 0, 0, 0.15);" class="mdui-p-y-1 mdui-typo">
             <div class="mdui-container">
-                <span class="mdui-text-color-white-secondary">© <?php date("Y")?> <a class="mdui-text-color-white-secondary" mdui-dialog="{target: '#noExist'}">克莱登大学</a></span>
+                <span class="mdui-text-color-white-secondary">© <?php echo date("Y"); ?> <a class="mdui-text-color-white-secondary" mdui-dialog="{target: '#noExist'}">克莱登大学</a></span>
                 <span class="mdui-text-color-white-secondary mdui-float-right">本程序在编写完成后开源于本人的
                 <a class="mdui-text-color-white-secondary" target="_blank" href="https://github.com/Foldblade/Online-Course-Selection-System-of-Carleton-University">Github</a>
                 </span>
