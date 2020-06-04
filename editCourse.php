@@ -109,7 +109,7 @@
                                     <div class="mdui-textfield mdui-textfield-floating-label">
                                         <i class="mdui-icon material-icons">description</i>
                                         <label class="mdui-textfield-label">课程简介</label>
-                                        <textarea class="mdui-textfield-input" type="text" name="brief" maxlength="1000"><?php echo $detail["brief"]; ?></textarea>
+                                        <textarea class="mdui-textfield-input" type="text" name="brief" maxlength="1000"><?php echo str_replace("<br />", "\r\n", $detail["brief"]); ?></textarea>
                                     </div>
                                 </div>
                                 <div class="mdui-col-xs-12 mdui-col-md-2 mdui-m-b-1 mdui-m-t-2">

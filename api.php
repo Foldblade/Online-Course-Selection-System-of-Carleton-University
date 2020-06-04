@@ -213,8 +213,6 @@
                 }
                 $totalTime = intval($_POST["theoryTime"]) + intval($_POST["practiceTime"]);
                 $brief = htmlentities($_POST["brief"]);
-                $brief = str_replace("<br />", "\r\n", $brief);
-                $brief = str_replace("<br/>", "\r\n", $brief);
                 $brief = str_replace(' ', "&nbsp;", $brief);
                 $brief = str_replace("\r\n", "<br />", $brief);
                 $brief = str_replace("\r", "<br />", $brief);

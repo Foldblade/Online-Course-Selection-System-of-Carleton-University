@@ -370,7 +370,7 @@
                                 <td>'+res["data"][i]["language"]+'</td>\
                                 <td>'+res["data"][i]["type"]+'</td>\
                                 <td>'+res["data"][i]["category"]+'</td>\
-                                <td class="mdui-text-right"><a href="editClass.php?courseID='+res["data"][i]["courseID"]+'" target="_blank" class="mdui-btn mdui-btn-dense mdui-color-theme-accent mdui-ripple">编辑</a></td>\
+                                <td class="mdui-text-right"><a href="editCourse.php?courseID='+res["data"][i]["courseID"]+'" target="_blank" class="mdui-btn mdui-btn-dense mdui-color-theme-accent mdui-ripple">编辑</a></td>\
                             </tr>\
                             ');
                         }
