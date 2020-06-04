@@ -74,14 +74,14 @@ EOF;
             <li class="mdui-subheader-inset">个人中心</li>
                 <li class="mdui-list-item mdui-ripple"  id="LCoursesLibrary">
                     <i class="mdui-list-item-icon mdui-icon material-icons">collections_bookmark</i>
-                    <a href="#" class="mdui-list-item-content">课程库</a>
+                    <a href="index.php" class="mdui-list-item-content">课程库</a>
                 </li>
                 <?php 
                     if (privilege() == "student") {
                         echo <<< EOF
                         <li class="mdui-list-item mdui-ripple">
                             <i class="mdui-list-item-icon mdui-icon material-icons">wysiwyg</i>
-                            <a href="#" class="mdui-list-item-content">我的选课</a>
+                            <a href="selectClass.php" class="mdui-list-item-content">我的选课</a>
                         </li>
                         <li class="mdui-list-item mdui-ripple">
                             <i class="mdui-list-item-icon mdui-icon material-icons">event_available</i>

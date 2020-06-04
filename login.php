@@ -97,8 +97,10 @@
                                                             if (res["status"] == "success") { // 登陆成功
                                                                 // 重定向到首页
                                                                 window.location.href='index.php';
+                                                            } else if(res["status"] == "blocked") {
+                                                                mdui.alert(res["errorMsg"], function() {$("#login").attr("disabled", "");}, {"confirmText": "好的"});
                                                             } else {
-                                                                mdui.alert(res["errorMsg"], function() {}, {"confirmText": "好的"});
+                                                                mdui.alert(res["errorMsg"], function() {window.location.href='login.php';}, {"confirmText": "好的"});
                                                             }
                                                         }
                                                     });
@@ -114,6 +116,7 @@
                                                             }
                                                             if ($_GET["error"] == "loggedOut") {
                                                                 echo "mdui.snackbar({message: '您已成功登出',position: 'bottom'});";
+                                                                echo "window.setTimeout(function() {window.location.href='login.php';}, 10000);";
                                                             }
                                                         }
                                                     ?>

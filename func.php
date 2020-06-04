@@ -59,13 +59,14 @@
         global $con;
         if(isset($_COOKIE["Carleton_Status"])) {
             $cookieStatus = json_decode(base64_decode(urldecode($_COOKIE["Carleton_Status"])), true);
+            $userID = $cookieStatus["userID"];
             $user = $cookieStatus["user"];
             $GUID = $cookieStatus["GUID"];
             $sql = "SELECT * FROM `status` WHERE `GUID` = '{$GUID}'";
             $res = mysqli_query($con, $sql);
             $count = mysqli_num_rows($res);
             $statusData = mysqli_fetch_all($res, MYSQLI_ASSOC);
-            if($count == 1 && intval($statusData[0]["expireTime"]) > time() && $statusData[0]["user"] == $user) {
+            if($count == 1 && intval($statusData[0]["expireTime"]) > time() && $statusData[0]["user"] == $user && $statusData[0]["userID"] == $userID) {
                 ; // 通过
             } else {
                 header("Location: login.php?error=notLoggedIn"); // 跳转到登录页面
@@ -82,8 +83,8 @@
         global $con;
         if(isset($_COOKIE["Carleton_Status"])) {
             $cookieStatus = json_decode(base64_decode(urldecode($_COOKIE["Carleton_Status"])), true);
-            $user = $cookieStatus["user"];
-            $sql = "SELECT * FROM `user` WHERE `user` = '{$user}'";
+            $userID = $cookieStatus["userID"];
+            $sql = "SELECT `privilege` FROM `user` WHERE `userID` = '{$userID}'";
             $res = mysqli_query($con, $sql);
             $count = mysqli_num_rows($res);
             $statusData = mysqli_fetch_all($res, MYSQLI_ASSOC);
@@ -133,6 +134,20 @@
         if(isset($_COOKIE["Carleton_Status"])) {
             $cookieStatus = json_decode(base64_decode(urldecode($_COOKIE["Carleton_Status"])), true);
             $user = $cookieStatus["user"];
+            return $user;
+        }
+        return "";
+    }
+
+    /**
+     * 获取用户ID
+     * 注意：该函数仅从Cookie中获取ID
+     * @return string 用户名，不存在返回空字符串
+     */
+    function getUserID() {
+        if(isset($_COOKIE["Carleton_Status"])) {
+            $cookieStatus = json_decode(base64_decode(urldecode($_COOKIE["Carleton_Status"])), true);
+            $user = $cookieStatus["userID"];
             return $user;
         }
         return "";
