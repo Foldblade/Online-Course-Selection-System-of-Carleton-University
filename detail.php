@@ -88,7 +88,7 @@
                                 <div class="mdui-col-xs-12 mdui-typo-title-opacity mdui-m-t-3">授课语言</div>
                                 <div class="mdui-col-xs-12 mdui-typo-body-1-opacity"><?php echo $detail["language"] ?></div>
                                 <div class="mdui-col-xs-12 mdui-typo-title-opacity mdui-m-t-3">课程简介</div>
-                                <div class="mdui-col-xs-12 mdui-typo-body-1-opacity"><?php echo $detail["brief"] ?></div>
+                                <div class="mdui-col-xs-12 mdui-typo-body-1-opacity"><?php echo $detail["brief"]==""?"老师有点懒，还没有写简介……":$detail["brief"]; ?></div>
                             </div>
                         </div>
                     </div>

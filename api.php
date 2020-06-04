@@ -62,7 +62,7 @@
             }
         }
 
-        /** 课程查询表单 
+        /** 课程查询表单
          *  参数: 
          *      searchCourse: API判别名,字段必须
          *      attribution: 开设院系，必须，可为空
@@ -123,6 +123,115 @@
             }
         }
 
+        /** 添加课程表单 
+         *  参数: 
+         *      addCourse: API判别名,字段必须
+         *      name: 课程名，必须
+         *      name_en: 英文课程名，必须
+         *      score: 学分，必须
+         *      theoryTime: 理论学时，必须
+         *      practiceTime: 实践学时，必须
+         *      attribution: 开设院系，必须
+         *      language: 授课语种，必须
+         *      type: 课程类型，必须
+         *      category: 校选课类别，可选，可为空
+         *      brief: 课程简介，必须，可为空
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      errorMsg: 仅失败时存在。中文的失败信息
+        */
+        if(isset($_POST["addCourse"])) {
+            if(isset($_POST["name"]) && isset($_POST["name_en"]) && isset($_POST["score"]) 
+            && isset($_POST["theoryTime"]) && isset($_POST["practiceTime"]) && isset($_POST["attribution"])
+            && isset($_POST["language"]) && isset($_POST["type"]) && isset($_POST["brief"])) {
+                if (isset($_POST["category"])) {
+                    $category = $_POST["category"];
+                } else {
+                    $category = "";
+                }
+                $newFileName = "";
+                if(preg_match("#^image/.*$#", $_FILES["img"]["type"]) != 0) {
+                    $uploaddir = 'img/';
+                    $newFileName = shortUUID().".".pathinfo($_FILES["img"]["name"], PATHINFO_EXTENSION);
+                    if(is_uploaded_file($_FILES['img']['tmp_name'])) {
+                        move_uploaded_file($_FILES["img"]["tmp_name"], "img/".$newFileName);
+                    }
+                }
+                $totalTime = intval($_POST["theoryTime"]) + intval($_POST["practiceTime"]);
+                $brief = htmlentities($_POST["brief"]);
+                $brief = str_replace(' ', "&nbsp;", $brief);
+                $brief = str_replace("\r\n", "<br />", $brief);
+                $brief = str_replace("\r", "<br />", $brief);
+                $brief = str_replace("\n", "<br />", $brief);
+                $sql = "INSERT INTO `course` (`name`, `name_en`, `score`, `theoryTime`, `practiceTime`, `totalTime`, `attribution`, `language`, `type`, `category`, `brief`, `img`) 
+                        VALUES ('{$_POST["name"]}', '{$_POST["name_en"]}', '{$_POST["score"]}', '{$_POST["theoryTime"]}', '{$_POST["practiceTime"]}', '$totalTime', 
+                        '{$_POST["attribution"]}', '{$_POST["language"]}', '{$_POST["type"]}', '$category', '$brief', '$newFileName')";
+                $res = mysqli_query($con, $sql);
+                $response = array("status" => "success", "files" => $_FILES);
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "上传参数不完整");
+            }
+        }
+
+        /** 更新课程表单 
+         *  参数: 
+         *      updateCourse: API判别名,字段必须
+         *      courseID: 课程ID，必须
+         *      name: 课程名，必须
+         *      name_en: 英文课程名，必须
+         *      score: 学分，必须
+         *      theoryTime: 理论学时，必须
+         *      practiceTime: 实践学时，必须
+         *      attribution: 开设院系，必须
+         *      language: 授课语种，必须
+         *      type: 课程类型，必须
+         *      category: 校选课类别，可选，可为空
+         *      brief: 课程简介，必须，可为空
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      errorMsg: 仅失败时存在。中文的失败信息
+        */
+        if(isset($_POST["updateCourse"])) {
+            if(isset($_POST["courseID"]) && isset($_POST["name"]) && isset($_POST["name_en"]) && isset($_POST["score"]) 
+            && isset($_POST["theoryTime"]) && isset($_POST["practiceTime"]) && isset($_POST["attribution"])
+            && isset($_POST["language"]) && isset($_POST["type"]) && isset($_POST["brief"])) {
+                if (isset($_POST["category"])) {
+                    $category = $_POST["category"];
+                } else {
+                    $category = "";
+                }
+
+                if(preg_match("#^image/.*$#", $_FILES["img"]["type"]) != 0) {
+                    $uploaddir = 'img/';
+                    $newFileName = shortUUID().".".pathinfo($_FILES["img"]["name"], PATHINFO_EXTENSION);
+                    if(is_uploaded_file($_FILES['img']['tmp_name'])) {
+                        move_uploaded_file($_FILES["img"]["tmp_name"], "img/".$newFileName);
+                        $sql = "UPDATE `course` SET `img` = '$newFileName' 
+                                WHERE `course`.`courseID` = {$_POST["courseID"]}";
+                        $res = mysqli_query($con, $sql);
+                    }
+                }
+                $totalTime = intval($_POST["theoryTime"]) + intval($_POST["practiceTime"]);
+                $brief = htmlentities($_POST["brief"]);
+                $brief = str_replace("<br />", "\r\n", $brief);
+                $brief = str_replace("<br/>", "\r\n", $brief);
+                $brief = str_replace(' ', "&nbsp;", $brief);
+                $brief = str_replace("\r\n", "<br />", $brief);
+                $brief = str_replace("\r", "<br />", $brief);
+                $brief = str_replace("\n", "<br />", $brief);
+                $sql = "UPDATE `course` SET `name` = '{$_POST["name"]}', `name_en` = '{$_POST["name_en"]}', `score` = '{$_POST["score"]}', 
+                `theoryTime` = '{$_POST["theoryTime"]}', `practiceTime` = '{$_POST["practiceTime"]}', `totalTime` = '$totalTime', 
+                `attribution` = '{$_POST["attribution"]}', `language` = '{$_POST["language"]}', `type` = '{$_POST["type"]}', 
+                `category` = '$category', `brief` = '$brief'
+                WHERE `course`.`courseID` = {$_POST["courseID"]}";
+
+                $res = mysqli_query($con, $sql);
+                $response = array("status" => "success", "files" => $_FILES, "sql" => $sql);
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不完整");
+            }
+        }
+
     } else if ($_SERVER['REQUEST_METHOD'] == 'GET') { // GET请求
 
         /** 退出登录
@@ -148,6 +257,7 @@
                 $response = array("status" => "failed", "errorMsg" => "参数错误，退出登陆失败");
             }
         }
+
     }
     $responseJSON = json_encode($response, JSON_UNESCAPED_UNICODE);
     exit($responseJSON);

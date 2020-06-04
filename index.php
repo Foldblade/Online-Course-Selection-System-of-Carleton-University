@@ -65,7 +65,7 @@
                                         ?>
                                     </select>
                                     <script>
-                                        $("#type").click(function() {
+                                        $("#type").change(function() {
                                             if($("#type").val() == "校选课" && $("#category").attr("disabled") == "disabled") {
                                                 $("#category").removeAttr("disabled");
                                             } else { // 非选中校选课
@@ -132,13 +132,7 @@
                                 <div class="mdui-container mdui-p-t-5">
                                     <div class="mdui-col-xs-12 mdui-text-center">
                                         <div class="mdui-btn-group" id="pageButtonAreas">
-                                            <button type="button" class="mdui-btn mdui-text-color-theme"><i class="mdui-icon material-icons">first_page</i></button>
-                                            <button type="button" class="mdui-btn mdui-text-color-theme">1</button>
-                                            <button type="button" class="mdui-btn mdui-text-color-theme">2</button>
-                                            <button type="button" class="mdui-btn mdui-text-color-theme">3</button>
-                                            <button type="button" class="mdui-btn mdui-text-color-theme">4</button>
-                                            <button type="button" class="mdui-btn mdui-text-color-theme">5</button>
-                                            <button type="button" class="mdui-btn mdui-text-color-theme"><i class="mdui-icon material-icons">last_page</i></button>
+                                            <!--页码按钮区-->
                                         </div>
                                     </div>
                                 </div>

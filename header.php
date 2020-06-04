@@ -91,9 +91,9 @@ EOF;
                     } else if (privilege() == "secretary") {
                         echo <<< EOF
                         <li class="mdui-subheader-inset">管理中心</li>
-                        <li class="mdui-list-item mdui-ripple">
+                        <li class="mdui-list-item mdui-ripple" id="LCourseManagement">
                             <i class="mdui-list-item-icon mdui-icon material-icons">build</i>
-                            <a href="#" class="mdui-list-item-content">课程管理</a>
+                            <a href="courseManagement.php" class="mdui-list-item-content">课程管理</a>
                         </li>
                         <li class="mdui-list-item mdui-ripple">
                             <i class="mdui-list-item-icon mdui-icon material-icons">pending_actions</i>

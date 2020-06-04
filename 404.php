@@ -40,14 +40,13 @@
 
                 <!-- 卡片的媒体内容，可以包含图片、视频等媒体内容，以及标题、副标题 -->
                 <div class="mdui-card-media">
-                  <img src="img/error-2129569_1280.jpg"/>
+                    <img src="img/error-2129569_1280.jpg"/>
                 </div>
                 <!-- 卡片的标题和副标题 -->
                 <div class="mdui-card-primary">
-                  <div class="mdui-card-primary-title">404 Not Found</div>
-                  <div class="mdui-card-primary-subtitle">您寻找的内容不存在。</div>
+                    <div class="mdui-card-primary-title">404 Not Found</div>
+                    <div class="mdui-card-primary-subtitle">您寻找的内容不存在。</div>
                 </div>
-
             </div>
         </div>
     </div>

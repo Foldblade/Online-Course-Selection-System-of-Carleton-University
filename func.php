@@ -20,6 +20,7 @@
     /**
      * 生成GUID
      * 借鉴自 http://guid.us/GUID/PHP
+     * @return string GUID
      */
     function GUID(){
         if (function_exists('com_create_guid')){
@@ -37,6 +38,17 @@
                 // .chr(125);// "}"
             return $uuid;
         }
+    }
+
+    /**
+     * 生成无连接线(-)的GUID
+     * 借鉴自 http://guid.us/GUID/PHP
+     * @return string 无连接线GUID
+     */
+    function shortUUID(){
+        mt_srand((double)microtime()*10000);
+        $charid = strtoupper(md5(uniqid(rand(), true)));
+        return $charid;
     }
 
     /**
@@ -102,13 +114,13 @@
                 if (in_array($statusData[0]["privilege"], $need_privilege)) {
                     ;
                 } else {
-                    header("Location: index.php?error=privilegeError"); // 跳转到首页
+                    header("Location: index.php"); // 跳转到首页
                 }
             } else {
-                header("Location: index.php?error=privilegeError"); // 跳转到首页
+                header("Location: index.php"); // 跳转到首页
             }
         } else {
-            header("Location: index.php?error=privilegeError"); // 跳转到首页
+            header("Location: index.php"); // 跳转到首页
         }
     }
 
