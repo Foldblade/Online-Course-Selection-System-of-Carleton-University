@@ -312,7 +312,7 @@
                                                 <th>开设院系</th>
                                                 <th>授课语言</th>
                                                 <th>类型</th>
-                                                <th>选修课类别</th>
+                                                <th>校选课类别</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -410,7 +410,7 @@
                         });
                     }
                 } else {
-                    mdui.alert("查询失败，请稍后再试", function() {}, {"confirmText": "好的"}); 
+                    mdui.snackbar({message: "查询失败，请稍后再试", position: 'bottom'});
                 }
             }
         });

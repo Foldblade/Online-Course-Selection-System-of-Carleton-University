@@ -1,15 +1,58 @@
-<?php require "header.php"; ?>
 <?php require_once "func.php"; ?>
 <?php auth(); ?>
+<?php privilege_check(array("student")); ?>
+<?php require "header.php"; ?>
 
 <script>
-    document.getElementById("pageTitle").innerText = "课程库";
-    document.getElementById("LCoursesLibrary").classList.add("mdui-list-item-active");
+    document.getElementById("pageTitle").innerText = "我的选课";
+    document.getElementById("LMyCourses").classList.add("mdui-list-item-active");
 </script>
 <div class="mdui-container">
     <div class="mdui-row">
         <div class="mdui-col-xs-12">
             <div class="mdui-panel mdui-m-t-3" mdui-panel>
+            <div class="mdui-panel-item">
+                    <div class="mdui-panel-item-header">
+                        <div class="mdui-panel-item-title mdui-m-y-1" style="font-size: 18px"><i class="mdui-icon material-icons mdui-m-r-1">list_alt</i>我的选课</div>
+                        <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
+                    </div>
+                    <div class="mdui-panel-item-body">
+                        <div class="mdui-container">
+                            <div class="mdui-row">
+                                <div class="mdui-col-xs-12">
+                                    <div class="mdui-table-fluid">
+                                        <table class="mdui-table mdui-table-hoverable">
+                                            <thead>
+                                                <tr>
+                                                    <th>课程名</th>
+                                                    <th class="mdui-table-col-numeric">学分</th>
+                                                    <th class="mdui-table-col-numeric">总学时</th>
+                                                    <th>开设院系</th>
+                                                    <th>授课语言</th>
+                                                    <th>类型</th>
+                                                    <th>校选课类别</th>
+                                                    <th>删除</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="selectedCourseTbody">
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="mdui-col-xs-12 mdui-typo">
+                                    <div class="mdui-typo-body-1-opacity mdui-m-y-2">
+                                        <i class="mdui-icon material-icons">warning</i>
+                                        此处显示的课程并不是最终结果。您必须点击“提交审核”进行保存，这样教学秘书才会收到您最新选课的修改情况并进行审核。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mdui-panel-item-actions">
+                            <button class="mdui-btn mdui-ripple mdui-text-color-theme-accent" mdui-panel-item-close>收起</button>
+                            <button class="mdui-btn mdui-ripple mdui-text-color-theme-accent" id="submitToAudit">提交审核</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="mdui-panel-item mdui-panel-item-open">
                     <div class="mdui-panel-item-header">
                         <div class="mdui-panel-item-title mdui-m-y-1" style="font-size: 18px"><i class="mdui-icon material-icons mdui-m-r-1">search</i>课程查询</div>
@@ -94,7 +137,7 @@
                 </div>
             </div>
         </div>
-        <div class="mdui-col-xs-12" id="courseCard">
+        <div class="mdui-col-xs-12 mdui-hidden" id="courseCard">
             <div class="mdui-card mdui-m-y-3">
                 <!-- 卡片的标题和副标题 -->
                 <div class="mdui-card-primary">
@@ -106,7 +149,7 @@
                     <div class="mdui-container-fluid">
                         <div class="mdui-row">
                             <div class="mdui-col-xs-12">
-                                <div class="mdui-progress" id="loading">
+                                <div class="mdui-progress mdui-hidden" id="loading">
                                     <div class="mdui-progress-indeterminate"></div>
                                 </div>
                                 <div class="mdui-table-fluid">
@@ -120,7 +163,7 @@
                                                 <th>授课语言</th>
                                                 <th>类型</th>
                                                 <th>校选课类别</th>
-                                                <th>详情</th>
+                                                <th>选课</th>
                                             </tr>
                                         </thead>
                                         <tbody id="courseTbody">
@@ -144,8 +187,128 @@
         </div>
     </div>
 </div>
+<div class="mdui-dialog" id="deleteDialog">
+    <div class="mdui-dialog-title">确实要删除吗？</div>
+    <div class="mdui-dialog-content">你将会删除课程<span id="deleteDialogCoursename"></span>。该操作不可逆。</div>
+    <form id="deleteForm"><input class="mdui-hidden" name="courseID" id="deleteCourseID"/><input class="mdui-hidden" name="deleteCourse"/></form>
+    <div class="mdui-dialog-actions">
+        <button class="mdui-btn mdui-ripple" mdui-dialog-close>取消</button>
+        <button class="mdui-btn mdui-ripple" mdui-dialog-confirm>确定</button>
+    </div>
+</div>
+
+<script src="js/mdui.min.js"></script>
 <script>
+    var updateSelectedCourses = function() { // 更新未审核已选课程table
+        $.ajax({ 
+            type: "GET",
+            url: "api.php",
+            data: "getSelectedCourses=&userID="+<?php echo getUserID(); ?>,  
+            async: false,  
+            error: function(request) {
+                mdui.alert("网络连接失败", function() {}, {"confirmText": "好的"}); 
+            },  
+            success: function(data, textStatus) {
+                var res = JSON.parse(data);
+                if (res["status"] == "success") { // 添加成功
+                    $("#selectedCourseTbody").empty();
+                    // 默默更新整个table
+                    for (let i in res["data"]) {
+                        $("#selectedCourseTbody").append('\
+                            <tr>\
+                                <td>'+res["data"][i]["name"]+'</td>\
+                                <td>'+res["data"][i]["score"]+'</td>\
+                                <td>'+res["data"][i]["totalTime"]+'</td>\
+                                <td>'+res["data"][i]["attribution"]+'</td>\
+                                <td>'+res["data"][i]["language"]+'</td>\
+                                <td>'+res["data"][i]["type"]+'</td>\
+                                <td>'+res["data"][i]["category"]+'</td>\
+                                <td class="mdui-text-right">\
+                                    <button class="mdui-btn mdui-btn-icon mdui-btn-dense mdui-color-theme-accent mdui-ripple" value="'+res["data"][i]["courseID"]+'" id="del'+res["data"][i]["courseID"]+'">\
+                                        <i class="mdui-icon material-icons">delete</i>\
+                                    </button>\
+                                </td>\
+                            </tr>'
+                        );
+                    }
+                    // “添加”按钮绑定事件
+                    $("button[id^='del']").click(function () {
+                        $.ajax({ 
+                            type: "GET",  
+                            url: "api.php",  
+                            data: "getCourseDetail=&courseID="+$(this).val(),  
+                            async: false,  
+                            error: function(request) {
+                                mdui.alert("网络连接失败", function() {}, {"confirmText": "好的"}); 
+                            },  
+                            success: function(data, textStatus) {
+                                var res = JSON.parse(data);
+                                if (res["status"] == "success") { // 查询成功
+                                    $("#deleteDialogCoursename").html(res["data"]["name"]);
+                                    $("#deleteCourseID").val(res["data"]["courseID"]);
+                                    Del.open();
+                                } else {
+                                    mdui.alert(res["errorMsg"], function() {}, {"confirmText": "好的"});
+                                }
+                            }
+                        });
+	                });
+                    mdui.updateTables();
+                } else {
+                    mdui.snackbar({message: res["errorMsg"], position: 'bottom'});
+                }
+            }
+        });
+        
+    }
+    var Del = new mdui.Dialog('#deleteDialog', {"overlay": false});
+    var DelDialog = document.getElementById("deleteDialog");
+    DelDialog.addEventListener('confirm.mdui.dialog', function () {
+        $.ajax({ 
+            type: "GET",  
+            url: "api.php",  
+            data: $("#deleteForm").serialize(),  
+            async: false,  
+            error: function(request) {
+                mdui.snackbar({message: "网络连接失败", position: 'bottom'});
+            },  
+            success: function(data, textStatus) {
+                var res = JSON.parse(data);
+                if (res["status"] == "success") { // 查询成功
+                    mdui.snackbar({message: "删除成功", position: 'bottom'});
+                    updateSelectedCourses();
+                } else {
+                    mdui.snackbar({message: res["errorMsg"], position: 'bottom'});
+                }
+            }
+        });
+    });
+    var selectCourse = function(courseID) { // 添加选课到数据库
+        $.ajax({ 
+            type: "POST",
+            url: "api.php",
+            data: "addToMyChoice=&courseID="+courseID+"&userID="+<?php echo getUserID(); ?>,  
+            async: false,  
+            error: function(request) {
+                mdui.alert("网络连接失败", function() {}, {"confirmText": "好的"}); 
+            },  
+            success: function(data, textStatus) {
+                var res = JSON.parse(data);
+                if (res["status"] == "success") { // 添加成功
+                    $("#add"+courseID).attr("disabled", "");
+                    updateSelectedCourses();
+                    mdui.snackbar({message: "选课成功", position: 'bottom'});
+                } else {
+                    mdui.snackbar({message: res["errorMsg"], position: 'bottom'});
+                    if (res["errorMsg"] == "您已选过该课程") {
+                        $("#add"+courseID).attr("disabled", "");
+                    }
+                }
+            }
+        });
+    }
     var search = function (page = 1) {
+        $("#courseCard").removeClass("mdui-hidden");
         $('html, body').animate({scrollTop: $('#courseCard').offset().top-40}, 1000); // 页面移动到卡片顶部
         $("#loading").removeClass("mdui-hidden"); // 加载进度条
         $.ajax({ 
@@ -176,10 +339,19 @@
                                 <td>'+res["data"][i]["language"]+'</td>\
                                 <td>'+res["data"][i]["type"]+'</td>\
                                 <td>'+res["data"][i]["category"]+'</td>\
-                                <td class="mdui-text-right"><a href="detail.php?courseID='+res["data"][i]["courseID"]+'" target="_blank" class="mdui-btn mdui-btn-icon mdui-btn-dense mdui-color-theme-accent mdui-ripple"><i class="mdui-icon material-icons">more_horiz</i></a></td>\
+                                <td class="mdui-text-right">\
+                                    <button class="mdui-btn mdui-btn-icon mdui-btn-dense mdui-color-theme-accent mdui-ripple" value="'+res["data"][i]["courseID"]+'" id="add'+res["data"][i]["courseID"]+'">\
+                                        <i class="mdui-icon material-icons">add</i>\
+                                    </button>\
+                                </td>\
                             </tr>\
                             ');
                         }
+
+                        // “添加”按钮绑定事件
+                        $("button[id^='add']").click(function () {
+                            selectCourse($(this).val());
+	                    });
 
                         mdui.snackbar({message: "查询成功", position: 'bottom'});
                         mdui.updateTables();
@@ -216,17 +388,37 @@
                         });
                     }
                 } else {
-                    mdui.snackbar({message: "查询失败，请稍后再试", position: 'bottom'}); 
+                    mdui.snackbar({message: "查询失败，请稍后再试", position: 'bottom'});
                 }
             }
         });
         $("#loading").addClass("mdui-hidden"); // 隐藏进度条
     }
+    $("#submitToAudit").click(function(){ // 提交审核
+        $.ajax({ 
+            type: "POST",
+            url: "api.php",
+            data: "submitToAudit=&userID="+<?php echo getUserID(); ?>,  
+            async: false,  
+            error: function(request) {
+                mdui.alert("网络连接失败", function() {}, {"confirmText": "好的"}); 
+            },  
+            success: function(data, textStatus) {
+                var res = JSON.parse(data);
+                console.log(res);
+                if (res["status"] == "success") { // 添加成功
+                    mdui.snackbar({message: "提交审核请求成功", position: 'bottom'});
+                } else {
+                    mdui.snackbar({message: res["errorMsg"], position: 'bottom'});
+                }
+            }
+        });
+    });
     $("#search").click(function() {
         search();
     });
     window.onload = function() {
-        $("#search").click();
+        updateSelectedCourses();
     }
 </script>
 <?php require "footer.php"; ?>

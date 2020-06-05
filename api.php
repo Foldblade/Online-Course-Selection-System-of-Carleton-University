@@ -152,67 +152,6 @@
             }
         }
 
-        /** 课程查询表单（选择课程用）
-         *  参数: 
-         *      searchCourse: API判别名,字段必须
-         *      attribution: 开设院系，必须，可为空
-         *      language: 授课语种，必须，可为空
-         *      type: 课程类型，必须，可为空
-         *      category: 校选课类别，可选，默认为空
-         *      name: 查询的课程名，必须，可为空
-         *      page: 可选，分页用，默认为1
-         *  返回: 
-         *      status: 成功为success，失败为failed
-         *      data: 成功时存在。查询到的数据。
-         *      totalPages: 成功时存在。该查询以20页一页进行分页所需的总页数
-        */
-        if(isset($_POST["searchCourse"])) {
-            $page = 1;
-            $category = "";
-            if(isset($_POST["attribution"]) && isset($_POST["language"]) && isset($_POST["type"])) {
-                if(isset($_POST["page"])) {
-                    $page = strval($_POST["page"]);
-                }
-                if(isset($_POST["category"])) {
-                    $category = $_POST["category"];
-                }
-                $attribution = $_POST["attribution"];
-                $language = $_POST["language"];
-                $type = $_POST["type"];
-                $name = $_POST["name"];
-                $select = "SELECT `courseID`, `name`, `score`, `totalTime`, 
-                        `attribution`, `language`, `type`, `category` FROM `course` ";
-                $where = 'WHERE `courseID` != "" '; // 这个条件毫无意义，只是为了拼凑其他条件方便一点
-                if($attribution != "") {
-                    $where = $where."AND `attribution` = '{$attribution}' ";
-                }
-                if($language != "") {
-                    $where = $where."AND `language` = '{$language}' ";
-                }
-                if($type != "") {
-                    $where = $where."AND `type` = '{$type}' ";
-                }
-                if($category != "") {
-                    $where = $where."AND `category` = '{$category}' ";
-                }
-                if($name != "") {
-                    $where = $where."AND `name` LIKE '%{$name}%' ";
-                }
-                $start = 20 * ($page-1);
-                $sql = $select.$where."LIMIT {$start}, 20";
-                $res = mysqli_query($con, $sql);
-                $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
-                $select = "SELECT COUNT(*) AS `count` FROM `course` ";
-                $sql = $select.$where;
-                $res = mysqli_query($con, $sql);
-                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
-                $totalPages = ceil(intval($data[0]["count"]) / 20); // 向上取整，获得总页数
-                $response = array("status" => "success", "data" => $searchData, "totalPages" => $totalPages, "thisPage" => $page);
-            } else {
-                $response = array("status" => "failed");
-            }
-        }
-
         /** 添加课程表单 
          *  参数: 
          *      addCourse: API判别名,字段必须
@@ -409,6 +348,59 @@
             }
         }
 
+        /** 添加选课
+         *  参数: 
+         *      addToMyChoice: API判别名,字段必须
+         *      userID: 用户ID，必须
+         *      courseID: 课程ID，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_POST["addToMyChoice"])) {
+            if(isset($_POST["userID"]) && isset($_POST["courseID"])) {
+                $sql = "SELECT `courseID` FROM `selectedCourse` WHERE `userID` = {$_POST["userID"]} AND `courseID` = {$_POST["courseID"]}";
+                $res = mysqli_query($con, $sql);
+                $count = mysqli_num_rows($res);
+                if($count >= 1) {
+                    $response = array("status" => "failed", "errorMsg" => "您已选过该课程");
+                } else {
+                    $sql = "INSERT INTO `selectedCourse` (`userID`, `courseID`) VALUES ({$_POST["userID"]}, {$_POST["courseID"]})";
+                    $res = mysqli_query($con, $sql);
+                    $response = array("status" => "success");
+                }
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
+            }
+        }
+
+        /** 提交审核请求
+         *  参数: 
+         *      deleteCourse: API判别名,字段必须
+         *      userID: 用户ID，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_POST["submitToAudit"])) {
+            auth();
+            if(isset($_POST["userID"])) {
+                $sql = "SELECT COUNT(*) AS `count` FROM `aduitQuery` WHERE `userID` = {$_POST["userID"]}";
+                $res = mysqli_query($con, $sql);
+                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $count = intval($data[0]["count"]);
+                if($count == 0) { // 不存在，inset
+                    $sql = "INSERT INTO `aduitQuery` (`userID`) VALUES ({$_POST["userID"]})";
+                } else { // 存在，update
+                    $sql = "UPDATE `aduitQuery` SET `audited` = 0 WHERE `aduitQuery`.`userID` = {$_POST["userID"]}";
+                }
+                $res = mysqli_query($con, $sql);
+                $response = array("status" => "success", "sql" => $sql);
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
+            }
+        }
+
     } else if ($_SERVER['REQUEST_METHOD'] == 'GET') { // GET请求
 
         /** 退出登录
@@ -452,10 +444,48 @@
             }
         }
 
+        /** 查询课程详情
+         *  参数: 
+         *      getCourseDetail: API判别名,字段必须
+         *      courseID: 需查询的课程ID，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      errorMsg: 仅失败时存在。中文的失败信息
+        */
+        if(isset($_GET["getCourseDetail"])) {
+            auth();
+            if(isset($_GET["courseID"])){
+                $response = array("status" => "success", "data" => getCourseDetail($_GET["courseID"]));
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数错误，查询失败");
+            }
+        }
+
+        /** 查询已选课程
+         *  参数: 
+         *      getSelectedCourses: API判别名,字段必须
+         *      userID: 需查询的用户ID，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      errorMsg: 仅失败时存在。中文的失败信息
+        */
+        if(isset($_GET["getSelectedCourses"])) {
+            auth();
+            if(isset($_GET["userID"])){
+                $sql = "SELECT `course`.* FROM `selectedCourse`, `course` 
+                        WHERE `selectedCourse`.`userID` = {$_GET["userID"]} AND `selectedCourse`.`courseID` = `course`.`courseID`";
+                $res = mysqli_query($con, $sql);
+                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $response = array("status" => "success", "data" => $data);
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数错误，查询失败");
+            }
+        }
+
         /** 删除用户表单
          *  参数: 
          *      deleteUser: API判别名,字段必须
-         *      userID: 用户名，必须
+         *      userID: 用户ID，必须
          *  返回: 
          *      status: 成功为success，失败为failed
          *      data: 成功时存在。查询到的数据。
@@ -464,6 +494,25 @@
             auth();
             if(isset($_GET["userID"])) {
                 $sql = "DELETE FROM `user` WHERE `user`.`userID` = {$_GET["userID"]}";
+                $res = mysqli_query($con, $sql);
+                $response = array("status" => "success");
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
+            }
+        }
+
+        /** 删除课程表单
+         *  参数: 
+         *      deleteCourse: API判别名,字段必须
+         *      courseID: 课程ID，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_GET["deleteCourse"])) {
+            auth();
+            if(isset($_GET["courseID"])) {
+                $sql = "DELETE FROM `selectedCourse` WHERE `selectedCourse`.`courseID` = {$_GET["courseID"]}";
                 $res = mysqli_query($con, $sql);
                 $response = array("status" => "success");
             } else {

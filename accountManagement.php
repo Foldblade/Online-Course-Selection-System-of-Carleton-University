@@ -326,8 +326,7 @@
                                         $("#editUser").val(res["data"]["user"]);
                                         $("#editPrivilege").val(res["data"]["privilege"]);
                                         $("#editUserID").val(res["data"]["userID"]);
-                                        mdui.updateTextFields($("#editUser"));
-                                        mdui.updateTextFields($("#editPrivilege"));
+                                        mdui.updateTextFields("#editUser");
                                         Edit.open();
                                     } else {
                                         mdui.alert(res["errorMsg"], function() {}, {"confirmText": "好的"});
@@ -392,7 +391,7 @@
                         });
                     }
                 } else {
-                    mdui.alert("查询失败，请稍后再试", function() {}, {"confirmText": "好的"}); 
+                    mdui.snackbar({message: "查询失败，请稍后再试", position: 'bottom'});
                 }
             }
         });

@@ -79,9 +79,9 @@ EOF;
                 <?php 
                     if (getPrivilege() == "student") {
                         echo <<< EOF
-                        <li class="mdui-list-item mdui-ripple">
+                        <li class="mdui-list-item mdui-ripple" id="LMyCourses">
                             <i class="mdui-list-item-icon mdui-icon material-icons">wysiwyg</i>
-                            <a href="selectClass.php" class="mdui-list-item-content">我的选课</a>
+                            <a href="selectCourse.php" class="mdui-list-item-content">我的选课</a>
                         </li>
                         <li class="mdui-list-item mdui-ripple">
                             <i class="mdui-list-item-icon mdui-icon material-icons">event_available</i>
