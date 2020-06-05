@@ -79,7 +79,7 @@
     /**
      * 获得用户权限
      */
-    function privilege() {
+    function getPrivilege() {
         global $con;
         if(isset($_COOKIE["Carleton_Status"])) {
             $cookieStatus = json_decode(base64_decode(urldecode($_COOKIE["Carleton_Status"])), true);
@@ -147,8 +147,8 @@
     function getUserID() {
         if(isset($_COOKIE["Carleton_Status"])) {
             $cookieStatus = json_decode(base64_decode(urldecode($_COOKIE["Carleton_Status"])), true);
-            $user = $cookieStatus["userID"];
-            return $user;
+            $userID = $cookieStatus["userID"];
+            return $userID;
         }
         return "";
     }
@@ -225,6 +225,24 @@
     function getCourseDetail($courseID) {
         global $con;
         $sql = "SELECT * FROM `course` WHERE `courseID` = $courseID";
+        $res = mysqli_query($con, $sql);
+        $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+        $count = mysqli_num_rows($res);
+        if ($count == 1) {
+            return $data[0];
+        } else {
+            return $data;
+        }
+    }
+
+    /**
+     * 获得用户详情
+     * @param int $userID 用户ID
+     * @return array 课程库中课程类型的array
+     */
+    function getUserDetail($userID) {
+        global $con;
+        $sql = "SELECT `user`, `privilege`, `userID`  FROM `user` WHERE `userID` = $userID";
         $res = mysqli_query($con, $sql);
         $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
         $count = mysqli_num_rows($res);

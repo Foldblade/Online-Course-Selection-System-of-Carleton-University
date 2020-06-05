@@ -94,7 +94,7 @@
                 </div>
             </div>
         </div>
-        <div class="mdui-col-xs-12">
+        <div class="mdui-col-xs-12" id="courseCard">
             <div class="mdui-card mdui-m-y-3">
                 <!-- 卡片的标题和副标题 -->
                 <div class="mdui-card-primary">
@@ -146,7 +146,7 @@
 </div>
 <script>
     var search = function (page = 1) {
-        scrollTo(0,0); // 滚回顶部
+        $('html, body').animate({scrollTop: $('#courseCard').offset().top-40}, 1000); // 页面移动到卡片顶部
         $("#loading").removeClass("mdui-hidden"); // 加载进度条
         $.ajax({ 
             type: "POST",  

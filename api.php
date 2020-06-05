@@ -152,7 +152,7 @@
             }
         }
 
-                /** 课程查询表单（选择课程用）
+        /** 课程查询表单（选择课程用）
          *  参数: 
          *      searchCourse: API判别名,字段必须
          *      attribution: 开设院系，必须，可为空
@@ -257,7 +257,7 @@
                         VALUES ('{$_POST["name"]}', '{$_POST["name_en"]}', '{$_POST["score"]}', '{$_POST["theoryTime"]}', '{$_POST["practiceTime"]}', '$totalTime', 
                         '{$_POST["attribution"]}', '{$_POST["language"]}', '{$_POST["type"]}', '$category', '$brief', '$newFileName')";
                 $res = mysqli_query($con, $sql);
-                $response = array("status" => "success", "files" => $_FILES);
+                $response = array("status" => "success");
             } else {
                 $response = array("status" => "failed", "errorMsg" => "上传参数不完整");
             }
@@ -314,9 +314,98 @@
                 WHERE `course`.`courseID` = {$_POST["courseID"]}";
 
                 $res = mysqli_query($con, $sql);
-                $response = array("status" => "success", "files" => $_FILES, "sql" => $sql);
+                $response = array("status" => "success");
             } else {
                 $response = array("status" => "failed", "errorMsg" => "参数不完整");
+            }
+        }
+
+        /** 添加账户表单 
+         *  参数: 
+         *      addAccount: API判别名,字段必须
+         *      user: 用户名，必须
+         *      passwd: 用户密码，必须
+         *      passwd2: 用户密码第二遍，必须
+         *      privilege: 用户权限等级，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      errorMsg: 仅失败时存在。中文的失败信息
+        */
+        if(isset($_POST["addAccount"])) {
+            privilege_check(array("secretary"));
+            if(isset($_POST["user"]) && isset($_POST["passwd"]) && isset($_POST["passwd2"]) && isset($_POST["privilege"])) {
+                if($_POST["passwd"] == $_POST["passwd2"]) {
+                    $salt = GUID(); // 取salt
+                    $passwd = sha1($_POST["passwd"].$salt); // 加密密码
+                    $sql = "INSERT INTO `user` (`user`, `privilege`, `password`, `salt`) 
+                    VALUES ('{$_POST["user"]}', '{$_POST["privilege"]}', '$passwd', '$salt')";
+                    $res = mysqli_query($con, $sql);
+                    $response = array("status" => "success");
+                } else {
+                    $response = array("status" => "failed", "errorMsg" => "两次密码不一致");
+                }
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "上传参数不完整");
+            }
+        }
+
+        /** 用户查询表单
+         *  参数: 
+         *      searchUsers: API判别名,字段必须
+         *      user: 用户名，必须，可为空
+         *      privilege: 用户权限，必须，可为空
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+         *      totalPages: 成功时存在。该查询以20页一页进行分页所需的总页数
+        */
+        if(isset($_POST["searchUsers"])) {
+            $page = 1;
+            if(isset($_POST["user"]) && isset($_POST["privilege"])) {
+                if(isset($_POST["page"])) {
+                    $page = strval($_POST["page"]);
+                }
+                $user = $_POST["user"];
+                $privilege = $_POST["privilege"];
+                $select = "SELECT `userID`, `user`, `privilege` FROM `user` ";
+                $where = 'WHERE `userID` != "" '; // 这个条件毫无意义，只是为了拼凑其他条件方便一点
+                if($user != "") {
+                    $where = $where."AND `user` LIKE '%{$user}%' ";
+                }
+                if($privilege != "") {
+                    $where = $where."AND `privilege` = '{$privilege}' ";
+                }
+                $start = 20 * ($page-1);
+                $sql = $select.$where."LIMIT {$start}, 20";
+                $res = mysqli_query($con, $sql);
+                $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $select = "SELECT COUNT(*) AS `count` FROM `user` ";
+                $sql = $select.$where;
+                $res = mysqli_query($con, $sql);
+                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $totalPages = ceil(intval($data[0]["count"]) / 20); // 向上取整，获得总页数
+                $response = array("status" => "success", "data" => $searchData, "totalPages" => $totalPages, "thisPage" => $page);
+            } else {
+                $response = array("status" => "failed");
+            }
+        }
+
+        /** 更新用户表单
+         *  参数: 
+         *      updateUser: API判别名,字段必须
+         *      user: 用户名，必须
+         *      privilege: 用户权限，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_POST["updateUser"])) {
+            if(isset($_POST["userID"]) && isset($_POST["user"]) && isset($_POST["privilege"])) {
+                $sql = "UPDATE `user` SET `user` = '{$_POST["user"]}', `privilege` = '{$_POST["privilege"]}' WHERE `userID` = {$_POST["userID"]}";
+                $res = mysqli_query($con, $sql);
+                $response = array("status" => "success");
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
             }
         }
 
@@ -343,6 +432,42 @@
                 $response = array("status" => "success");
             } else {
                 $response = array("status" => "failed", "errorMsg" => "参数错误，退出登陆失败");
+            }
+        }
+
+        /** 查询用户信息
+         *  参数: 
+         *      getUserDetail: API判别名,字段必须
+         *      userID: 需查询的用户名，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      errorMsg: 仅失败时存在。中文的失败信息
+        */
+        if(isset($_GET["getUserDetail"])) {
+            auth();
+            if(isset($_GET["userID"])){
+                $response = array("status" => "success", "data" => getUserDetail($_GET["userID"]));
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数错误，查询失败");
+            }
+        }
+
+        /** 删除用户表单
+         *  参数: 
+         *      deleteUser: API判别名,字段必须
+         *      userID: 用户名，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_GET["deleteUser"])) {
+            auth();
+            if(isset($_GET["userID"])) {
+                $sql = "DELETE FROM `user` WHERE `user`.`userID` = {$_GET["userID"]}";
+                $res = mysqli_query($con, $sql);
+                $response = array("status" => "success");
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
             }
         }
 
