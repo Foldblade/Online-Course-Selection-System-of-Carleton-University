@@ -56,16 +56,16 @@
                                                     <div class="mdui-textfield mdui-textfield-floating-label">
                                                         <i class="mdui-icon material-icons">account_circle</i>
                                                         <label class="mdui-textfield-label">用户名</label>
-                                                        <input class="mdui-textfield-input" type="text" name="user" pattern="^[a-zA-Z0-9]{3,10}$" required/>
-                                                        <div class="mdui-textfield-error">用户名不能为空</div>
+                                                        <input class="mdui-textfield-input" type="text" name="user" pattern="^[a-zA-Z][a-zA-Z0-9_]{4,9}$" required/>
+                                                        <div class="mdui-textfield-error">检查您用户名的格式</div>
                                                     </div>
                                                 </div>
                                                 <div class="mdui-col-xs-10 mdui-col-offset-xs-1">
                                                     <div class="mdui-textfield mdui-textfield-floating-label">
                                                         <i class="mdui-icon material-icons">vpn_key</i>
                                                         <label class="mdui-textfield-label">密码</label>
-                                                        <input class="mdui-textfield-input" type="password" name="passwd" required/>
-                                                        <div class="mdui-textfield-error">密码不能为空</div>
+                                                        <input class="mdui-textfield-input" type="password" name="passwd" pattern="^([0-9a-zA-Z_]){6,18}$" required/>
+                                                        <div class="mdui-textfield-error">检查您密码的格式</div>
                                                     </div>
                                                 </div>
                                                 <div class="mdui-col-xs-10 mdui-col-offset-xs-1">

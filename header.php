@@ -77,7 +77,7 @@ EOF;
                     <a href="index.php" class="mdui-list-item-content">课程库</a>
                 </li>
                 <?php 
-                    if (privilege() == "student") {
+                    if (getPrivilege() == "student") {
                         echo <<< EOF
                         <li class="mdui-list-item mdui-ripple">
                             <i class="mdui-list-item-icon mdui-icon material-icons">wysiwyg</i>
@@ -88,7 +88,7 @@ EOF;
                             <a href="#" class="mdui-list-item-content">选课结果</a>
                         </li>
 EOF;
-                    } else if (privilege() == "secretary") {
+                    } else if (getPrivilege() == "secretary" || getPrivilege() == "admin") {
                         echo <<< EOF
                         <li class="mdui-subheader-inset">管理中心</li>
                         <li class="mdui-list-item mdui-ripple" id="LCourseManagement">
@@ -99,9 +99,9 @@ EOF;
                             <i class="mdui-list-item-icon mdui-icon material-icons">pending_actions</i>
                             <a href="#" class="mdui-list-item-content">选课审核</a>
                         </li>
-                        <li class="mdui-list-item mdui-ripple">
+                        <li class="mdui-list-item mdui-ripple" id="LAccountManagement">
                             <i class="mdui-list-item-icon mdui-icon material-icons">group_add</i>
-                            <a href="#" class="mdui-list-item-content">账号管理</a>
+                            <a href="accountManagement.php" class="mdui-list-item-content">账号管理</a>
                         </li>
 EOF;
                     }
