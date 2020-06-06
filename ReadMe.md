@@ -121,23 +121,23 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 ### 登录页
 
-![登录页](ReadMe.assets\image-20200606185925218.png)
+![登录页](ReadMe.assets/image-20200606185925218.png)
 
 除登录页、关于页外的所有页面均需登陆后方可访问。如未登陆而访问了除登录页、关于页外的页面，将会跳转到登录页。
 
 在登陆页可选是否保持登录状态。若登录失败会出现失败提示，失败超过三次将会在24小时内禁止登录。
 
-![登录页2](ReadMe.assets\image-20200606190227772.png)
+![登录页2](ReadMe.assets/image-20200606190227772.png)
 
 ### 课程库（首页）
 
 登陆成功后将会自动跳转到首页。首页无论是学生或教学秘书都可访问。
 
-![课程库（首页）](ReadMe.assets\image-20200606192731898.png)
+![课程库（首页）](ReadMe.assets/image-20200606192731898.png)
 
 在首页可以按条件进行课程的查询。
 
-![课程库（首页）2](ReadMe.assets\image-20200606192833888.png)
+![课程库（首页）2](ReadMe.assets/image-20200606192833888.png)
 
 点击课程列表右侧的详情按钮，则可在新标签页中打开课程详情页，查看课程的详细信息。
 
@@ -145,13 +145,13 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 可在此页查看到课程的详细信息。
 
-![课程详情页](ReadMe.assets\image-20200606192928126.png)
+![课程详情页](ReadMe.assets/image-20200606192928126.png)
 
 ### 我的选课页
 
 该页面仅学生可以访问。
 
-![我的选课页](ReadMe.assets\image-20200606193404698.png)
+![我的选课页](ReadMe.assets/image-20200606193404698.png)
 
 学生可在我的选课页查询心仪的课程，并进行选课。选课后可进行删除操作，并可在此向教学秘书提交审核申请。
 
@@ -161,15 +161,15 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 学生可以在该页面查看到审核进度和自己的选课结果。
 
-![选课结果页](ReadMe.assets\image-20200606195907475.png)
+![选课结果页](ReadMe.assets/image-20200606195907475.png)
 
-![选课结果页2](ReadMe.assets\image-20200606200421860.png)
+![选课结果页2](ReadMe.assets/image-20200606200421860.png)
 
 ### 选课审核页
 
 该页面仅教学秘书可访问。
 
-![选课审核页](ReadMe.assets\image-20200606200322236.png)
+![选课审核页](ReadMe.assets/image-20200606200322236.png)
 
 可在该页面批准或打回学生的选课申请。
 
@@ -177,7 +177,7 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 该页面仅教学秘书可访问。
 
-![已审核列表页](ReadMe.assets\image-20200606200758289.png)
+![已审核列表页](ReadMe.assets/image-20200606200758289.png)
 
 可在当前页面查看已审核过的申请。
 
@@ -185,9 +185,9 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 该页面仅教学秘书可访问。
 
-![课程管理页](ReadMe.assets\image-20200606201111925.png)
+![课程管理页](ReadMe.assets/image-20200606201111925.png)
 
-![课程管理页](ReadMe.assets\image-20200606201237578.png)
+![课程管理页](ReadMe.assets/image-20200606201237578.png)
 
 可在此添加课程或编辑现有课程信息。如点击编辑课程，将会在新标签页打开编辑课程页。
 
@@ -197,7 +197,7 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 可在此页进行课程的编辑。
 
-![编辑课程页](ReadMe.assets\image-20200606201420003.png)
+![编辑课程页](ReadMe.assets/image-20200606201420003.png)
 
 ### 账号管理页
 
@@ -205,19 +205,19 @@ PHP课设：克莱登大学在线选课系统 - Online Course Selection System o
 
 可在此页添加账号、编辑或删除现有账号。
 
-![账号管理页](ReadMe.assets\image-20200606201510430.png)
+![账号管理页](ReadMe.assets/image-20200606201510430.png)
 
-![账号管理页2](ReadMe.assets\image-20200606201526802.png)
+![账号管理页2](ReadMe.assets/image-20200606201526802.png)
 
-![账号管理页3](ReadMe.assets\image-20200606201542340.png)
+![账号管理页3](ReadMe.assets/image-20200606201542340.png)
 
-![账号管理页4](ReadMe.assets\image-20200606201559978.png)
+![账号管理页4](ReadMe.assets/image-20200606201559978.png)
 
 ### 关于页
 
 对本系统所用外部资源的致谢。
 
-![关于页](ReadMe.assets\image-20200606201715082.png)
+![关于页](ReadMe.assets/image-20200606201715082.png)
 
 ## 致谢
 
