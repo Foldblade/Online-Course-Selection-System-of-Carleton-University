@@ -385,22 +385,63 @@
         if(isset($_POST["submitToAudit"])) {
             auth();
             if(isset($_POST["userID"])) {
-                $sql = "SELECT COUNT(*) AS `count` FROM `aduitQuery` WHERE `userID` = {$_POST["userID"]}";
+                $sql = "SELECT COUNT(*) AS `count` FROM `auditQuery` WHERE `userID` = {$_POST["userID"]}";
                 $res = mysqli_query($con, $sql);
                 $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
                 $count = intval($data[0]["count"]);
                 if($count == 0) { // 不存在，inset
-                    $sql = "INSERT INTO `aduitQuery` (`userID`) VALUES ({$_POST["userID"]})";
+                    $sql = "INSERT INTO `auditQuery` (`userID`) VALUES ({$_POST["userID"]})";
                 } else { // 存在，update
-                    $sql = "UPDATE `aduitQuery` SET `audited` = 0 WHERE `aduitQuery`.`userID` = {$_POST["userID"]}";
+                    $sql = "UPDATE `auditQuery` SET `audited` = NULL WHERE `auditQuery`.`userID` = {$_POST["userID"]}";
                 }
                 $res = mysqli_query($con, $sql);
-                $response = array("status" => "success", "sql" => $sql);
+                $response = array("status" => "success");
             } else {
                 $response = array("status" => "failed", "errorMsg" => "参数不全面");
             }
         }
 
+        /** 审核-批准
+         *  参数: 
+         *      auditApproved: API判别名,字段必须
+         *      choices: 存有用户ID的array，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_POST["auditApproved"])) {
+            auth();
+            if(isset($_POST["choices"])) {
+                foreach($_POST["choices"] as $user) {
+                    $sql = "UPDATE `auditQuery` SET `audited` = 1 WHERE `auditQuery`.`userID` = {$user} ";
+                    $res = mysqli_query($con, $sql);
+                }
+                $response = array("status" => "success");
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
+            }
+        }
+
+        /** 审核-打回
+         *  参数: 
+         *      auditRefused: API判别名,字段必须
+         *      choices: 存有用户ID的array，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_POST["auditRefused"])) {
+            auth();
+            if(isset($_POST["choices"])) {
+                foreach($_POST["choices"] as $user) {
+                    $sql = "UPDATE `auditQuery` SET `audited` = 0 WHERE `auditQuery`.`userID` = {$user} ";
+                    $res = mysqli_query($con, $sql);
+                }
+                $response = array("status" => "success");
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
+            }
+        }
     } else if ($_SERVER['REQUEST_METHOD'] == 'GET') { // GET请求
 
         /** 退出登录
@@ -520,6 +561,97 @@
             }
         }
 
+        /** 查询待审核课程列表
+         *  参数: 
+         *      getToAuditQuery: API判别名,字段必须
+         *      page: 页码，可选，默认为1
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_GET["getToAuditQuery"])) {
+            auth();
+            $page = 1;
+            $sql = "SELECT DISTINCT `user`.`userID`, `user`.`user`, 
+                    count(*) AS `count`, GROUP_CONCAT(`course`.`name`) AS `choices` 
+                    FROM `selectedCourse`, `course`,`user` 
+                    WHERE `selectedCourse`.`courseID` = `course`.`courseID` AND `selectedCourse`.`userID` = `user`.`userID` 
+                    AND `selectedCourse`.`userID` IN 
+                    (SELECT `userID` FROM `auditQuery` WHERE `audited` IS NULL) GROUP BY `selectedCourse`.`userID` ";
+            $res = mysqli_query($con, $sql);
+            $count = mysqli_num_rows($res);
+
+            $start = 20 * ($page-1);
+            $sql = $sql."LIMIT {$start}, 20";
+            $res = mysqli_query($con, $sql);
+            $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+            $totalPages = ceil($count / 20); // 向上取整，获得总页数
+            $response = array("status" => "success", "data" => $searchData, "totalPages" => $totalPages, "thisPage" => $page);
+        }
+
+        /** 查询已审核课程列表
+         *  参数: 
+         *      getAuditedQuery: API判别名,字段必须
+         *      page: 页码，可选，默认为1
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_GET["getAuditedQuery"])) {
+            auth();
+            $page = 1;
+            $sql = "SELECT DISTINCT `user`.`userID`, `user`.`user`, `auditQuery`.`audited`, 
+                    count(*) AS `count`, GROUP_CONCAT(`course`.`name`) AS `choices` 
+                    FROM `selectedCourse`, `course`, `user`, `auditQuery`
+                    WHERE `selectedCourse`.`courseID` = `course`.`courseID` AND `selectedCourse`.`userID` = `user`.`userID` AND `user`.`userID` = `auditQuery`.`userID`
+                    AND `selectedCourse`.`userID` IN 
+                    (SELECT `userID` FROM `auditQuery` WHERE `audited` IS NOT NULL) GROUP BY `selectedCourse`.`userID` ";
+            $res = mysqli_query($con, $sql);
+            $count = mysqli_num_rows($res);
+
+            $start = 20 * ($page-1);
+            $sql = $sql."LIMIT {$start}, 20";
+            $res = mysqli_query($con, $sql);
+            $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+            $totalPages = ceil($count / 20); // 向上取整，获得总页数
+            $response = array("status" => "success", "data" => $searchData, "totalPages" => $totalPages, "thisPage" => $page);
+        }
+
+        /** 查询选课结果
+         *  参数: 
+         *      getSelectResult: API判别名,字段必须
+         *      userID: 用户ID，必须
+         *  返回: 
+         *      status: 成功为success，失败为failed
+         *      data: 成功时存在。查询到的数据。
+        */
+        if(isset($_GET["getSelectResult"])) {
+            auth();
+            if(isset($_GET["userID"])) {
+                $sql = "SELECT `course`.`courseID`, `name`, `score`, `totalTime`, `attribution`, `language`, `type`, `category` 
+                        FROM `selectedCourse`, `course` 
+                        WHERE `selectedCourse`.`courseID` = `course`.`courseID` AND `selectedCourse`.`userID` = {$_GET["userID"]}";
+                $res = mysqli_query($con, $sql);
+                $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
+
+                $sql = "SELECT `updatedTime` FROM `selectedCourse` WHERE `userID` = {$_GET["userID"]} ORDER BY `updatedTime` DESC LIMIT 1";
+                $res = mysqli_query($con, $sql);
+                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $lastModifyTime = $data[0]["updatedTime"];
+
+                $sql = "SELECT `updatedTime`, `audited` FROM `auditQuery` WHERE `userID` = {$_GET["userID"]}";
+                $res = mysqli_query($con, $sql);
+                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                $lastAuditTime = $data[0]["updatedTime"];
+                $audited = $data[0]["audited"];
+
+                $response = array("status" => "success", "data" => $searchData, "lastModifyTime" => $lastModifyTime, "lastAuditTime" => $lastAuditTime, "audited" => $audited);
+            } else {
+                $response = array("status" => "failed", "errorMsg" => "参数不全面");
+            }
+        }
     }
     $responseJSON = json_encode($response, JSON_UNESCAPED_UNICODE);
     exit($responseJSON);

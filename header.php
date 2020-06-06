@@ -83,9 +83,9 @@ EOF;
                             <i class="mdui-list-item-icon mdui-icon material-icons">wysiwyg</i>
                             <a href="selectCourse.php" class="mdui-list-item-content">我的选课</a>
                         </li>
-                        <li class="mdui-list-item mdui-ripple">
+                        <li class="mdui-list-item mdui-ripple" id="LSelectResult">
                             <i class="mdui-list-item-icon mdui-icon material-icons">event_available</i>
-                            <a href="#" class="mdui-list-item-content">选课结果</a>
+                            <a href="selectResult.php" class="mdui-list-item-content">选课结果</a>
                         </li>
 EOF;
                     } else if (getPrivilege() == "secretary" || getPrivilege() == "admin") {
@@ -95,9 +95,13 @@ EOF;
                             <i class="mdui-list-item-icon mdui-icon material-icons">build</i>
                             <a href="courseManagement.php" class="mdui-list-item-content">课程管理</a>
                         </li>
-                        <li class="mdui-list-item mdui-ripple">
+                        <li class="mdui-list-item mdui-ripple" id="LAuditCourse">
                             <i class="mdui-list-item-icon mdui-icon material-icons">pending_actions</i>
-                            <a href="#" class="mdui-list-item-content">选课审核</a>
+                            <a href="auditCourse.php" class="mdui-list-item-content">选课审核</a>
+                        </li>
+                        <li class="mdui-list-item mdui-ripple" id="LAuditedCourse">
+                            <i class="mdui-list-item-icon mdui-icon material-icons">assignment_turned_in</i>
+                            <a href="auditedCourse.php" class="mdui-list-item-content">已审核列表</a>
                         </li>
                         <li class="mdui-list-item mdui-ripple" id="LAccountManagement">
                             <i class="mdui-list-item-icon mdui-icon material-icons">group_add</i>
