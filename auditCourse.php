@@ -82,7 +82,7 @@
                     $("#pageButtonAreas").empty(); // 清空页码按钮内容
                     // console.log(res["totalPages"]);
                     if(res["data"].length == 0) {
-                        mdui.snackbar({message: "暂时没用需要审核的内容", position: 'bottom'});
+                        mdui.snackbar({message: "暂时没有需要审核的内容", position: 'bottom'});
                     } else {
                         for (let i in res["data"]) {
                             $("#courseTbody").append('\

@@ -75,7 +75,7 @@
                     $("#pageButtonAreas").empty(); // 清空页码按钮内容
                     console.log(res);
                     if(res["data"].length == 0) {
-                        mdui.snackbar({message: "暂时没用审核过的内容", position: 'bottom'});
+                        mdui.snackbar({message: "暂时没有审核过的内容", position: 'bottom'});
                     } else {
                         for (let i in res["data"]) {
                             let status = "";
