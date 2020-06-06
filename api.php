@@ -628,6 +628,7 @@
          *      data: 成功时存在。查询到的数据。
         */
         if(isset($_GET["getSelectResult"])) {
+            error_reporting(0); // 禁用错误报告
             auth();
             if(isset($_GET["userID"])) {
                 $sql = "SELECT `course`.`courseID`, `name`, `score`, `totalTime`, `attribution`, `language`, `type`, `category` 
@@ -636,16 +637,27 @@
                 $res = mysqli_query($con, $sql);
                 $searchData = mysqli_fetch_all($res, MYSQLI_ASSOC);
 
-                $sql = "SELECT `updatedTime` FROM `selectedCourse` WHERE `userID` = {$_GET["userID"]} ORDER BY `updatedTime` DESC LIMIT 1";
-                $res = mysqli_query($con, $sql);
-                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
-                $lastModifyTime = $data[0]["updatedTime"];
-
-                $sql = "SELECT `updatedTime`, `audited` FROM `auditQuery` WHERE `userID` = {$_GET["userID"]}";
-                $res = mysqli_query($con, $sql);
-                $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
-                $lastAuditTime = $data[0]["updatedTime"];
-                $audited = $data[0]["audited"];
+                $lastModifyTime = null;
+                $lastAuditTime = null;
+                
+                try {
+                    $sql = "SELECT `updatedTime` FROM `selectedCourse` WHERE `userID` = {$_GET["userID"]} ORDER BY `updatedTime` DESC LIMIT 1";
+                    $res = mysqli_query($con, $sql);
+                    $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                    $lastModifyTime = $data[0]["updatedTime"];
+                } catch(Exception $e){
+                    ;
+                }
+                
+                try {
+                    $sql = "SELECT `updatedTime`, `audited` FROM `auditQuery` WHERE `userID` = {$_GET["userID"]}";
+                    $res = mysqli_query($con, $sql);
+                    $data = mysqli_fetch_all($res, MYSQLI_ASSOC);
+                    $lastAuditTime = $data[0]["updatedTime"];
+                    $audited = $data[0]["audited"];
+                } catch(Exception $e){
+                    ;
+                }
 
                 $response = array("status" => "success", "data" => $searchData, "lastModifyTime" => $lastModifyTime, "lastAuditTime" => $lastAuditTime, "audited" => $audited);
             } else {

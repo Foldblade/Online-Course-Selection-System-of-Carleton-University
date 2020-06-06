@@ -71,12 +71,15 @@ EOF;
             </div>
         </div>
         <ul class="mdui-list">
-            <li class="mdui-subheader-inset">个人中心</li>
-                <li class="mdui-list-item mdui-ripple"  id="LCoursesLibrary">
-                    <i class="mdui-list-item-icon mdui-icon material-icons">collections_bookmark</i>
-                    <a href="index.php" class="mdui-list-item-content">课程库</a>
-                </li>
-                <?php 
+            <?php
+                if($userName != "") {
+                    echo <<< EOF
+                    <li class="mdui-subheader">个人中心</li>
+                    <li class="mdui-list-item mdui-ripple"  id="LCoursesLibrary">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">collections_bookmark</i>
+                        <a href="index.php" class="mdui-list-item-content">课程库</a>
+                    </li>
+EOF;
                     if (getPrivilege() == "student") {
                         echo <<< EOF
                         <li class="mdui-list-item mdui-ripple" id="LMyCourses">
@@ -90,7 +93,7 @@ EOF;
 EOF;
                     } else if (getPrivilege() == "secretary" || getPrivilege() == "admin") {
                         echo <<< EOF
-                        <li class="mdui-subheader-inset">管理中心</li>
+                        <li class="mdui-subheader">管理中心</li>
                         <li class="mdui-list-item mdui-ripple" id="LCourseManagement">
                             <i class="mdui-list-item-icon mdui-icon material-icons">build</i>
                             <a href="courseManagement.php" class="mdui-list-item-content">课程管理</a>
@@ -109,8 +112,21 @@ EOF;
                         </li>
 EOF;
                     }
-                    
+                } else {
+                    echo <<< EOF
+                    <li class="mdui-divider"></li>
+                    <li class="mdui-list-item mdui-ripple">
+                        <i class="mdui-list-item-icon mdui-icon material-icons">login</i>
+                        <a href="login.php" class="mdui-list-item-content">登录</a>
+                    </li>
+EOF;
+                }
             ?>
+            <li class="mdui-divider"></li>
+            <li class="mdui-list-item mdui-ripple" id="LAbout">
+                <i class="mdui-list-item-icon mdui-icon material-icons">info</i>
+                <a href="about.php" class="mdui-list-item-content">关于</a>
+            </li>
         </ul>
     </div>
 </header>

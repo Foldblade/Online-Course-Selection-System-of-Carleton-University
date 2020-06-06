@@ -204,7 +204,7 @@
                 </div>
                 <div class="mdui-panel-item">
                     <div class="mdui-panel-item-header">
-                        <div class="mdui-panel-item-title mdui-m-y-1" style="font-size: 18px"><i class="mdui-icon material-icons mdui-m-r-1">search</i>课程查询</div>
+                        <div class="mdui-panel-item-title mdui-m-y-1" style="font-size: 18px"><i class="mdui-icon material-icons mdui-m-r-1">edit</i>编辑课程</div>
                         <i class="mdui-panel-item-arrow mdui-icon material-icons">keyboard_arrow_down</i>
                     </div>
                     <div class="mdui-panel-item-body">

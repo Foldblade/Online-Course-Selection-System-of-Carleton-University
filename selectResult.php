@@ -88,10 +88,16 @@
                     $("#lastAuditTime").html(res["lastAuditTime"]);
                     $("#lastModifyTime").html(res["lastModifyTime"]);
                     if(res["data"].length == 0) {
+                        $("#auditStatus").html("<b>请进行选课操作</b>");
                         mdui.snackbar({message: "查询无结果，请进行选课操作", position: 'bottom'});
                     } else {
-                        if(res["audited"] == null) { // 尚未审核
-                            $("#auditStatus").html("<b>选课尚未进行审核</b>");
+                        if(res["audited"] == null) { // 尚未审核或尚未提交审核
+                            if(res["lastAuditTime"] == null) {
+                                $("#auditStatus").html("<b>选课尚未提交审核，请前往<a href='selectCourse.php'>我的选课</a>页面提交审核。</b>");
+                                mdui.snackbar({message: "选课尚未提交审核", position: 'bottom'});
+                            } else {
+                                $("#auditStatus").html("<b>选课尚未进行审核</b>");
+                            }
                         } else if(res["audited"] == 0) {  // 未通过
                             $("#auditStatus").html("<b>选课审核未通过。请前往<a href='selectCourse.php'>我的选课</a>页面修改选课内容后重新提交审核。</b>");
                         } else if(res["audited"] == 1) {  // 通过审核
