@@ -220,7 +220,7 @@
     /**
      * 获得课程详情
      * @param int $courseID 课程ID
-     * @return array 课程库中课程类型的array
+     * @return array 课程信息
      */
     function getCourseDetail($courseID) {
         global $con;
@@ -238,7 +238,7 @@
     /**
      * 获得用户详情
      * @param int $userID 用户ID
-     * @return array 课程库中课程类型的array
+     * @return array 用户信息
      */
     function getUserDetail($userID) {
         global $con;
